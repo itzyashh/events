@@ -10,6 +10,8 @@ import { Appearance, AppState } from 'react-native';
 import { supabase } from '~/utils/supabase';
 
 import * as SystemUI from 'expo-system-ui';
+import Toastable from 'react-native-toastable';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
@@ -22,7 +24,7 @@ export default function RootLayout() {
     Lato_400Regular,
   });
 
-
+  const { top } = useSafeAreaInsets();
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -52,6 +54,15 @@ export default function RootLayout() {
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
     </Stack>
+      <Toastable
+                statusMap={{
+                    success: 'red',
+                    danger: 'yellow',
+                    warning: 'green',
+                    info: 'blue'
+                }}
+                offset={top}
+            />
     </AuthProvider>
   );
 }
