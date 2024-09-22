@@ -1,15 +1,41 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
-import events from '~/data/events'
 import { Fontisto } from '@expo/vector-icons'
+import { supabase } from '~/utils/supabase'
+import { Event } from '~/types/db'
+
 
 const Page = () => {
 
   const { id } = useLocalSearchParams()
 
-  // @ts-ignore
-  const event = events.find((event) => event.id == parseInt(id))
+  const [event, setEvent] = React.useState<Event | null>(null)
+
+  const getEvent = async () => { 
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', id)
+      .returns<Event>()
+      .single()
+
+    if (error) {
+      console.error('error', error)
+    }
+
+    if (data) {
+      console.log(data)
+      setEvent(data)
+    }
+  }
+
+  useEffect(() => {
+    getEvent()
+  }, [])
+
+
+
 
   return (
     <View style={styles.container}>
@@ -23,11 +49,11 @@ const Page = () => {
         headerRight: () => <Fontisto name="bookmark-alt" size={24} color="#ffffff" />
          }} />
 
-    <Image source={{ uri: event?.imageUrl }} style={styles.image} />
+    <Image source={{ uri: event?.image_url ?? '' }} style={styles.image} />
     <View style={styles.eventInfo}>
       <Text style={styles.title}>{event?.title}</Text>
       <Text style={styles.location}>{event?.location}</Text>
-      <Text style={styles.date}>{event?.startDate} - {event?.endDate}</Text>
+      <Text style={styles.date}>{event?.start_date} - {event?.end_date}</Text>
       <Text style={styles.description}>{event?.description}</Text>
 
 

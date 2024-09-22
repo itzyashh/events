@@ -1,9 +1,9 @@
 import { Image, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Event } from '~/data/events';
 import dayjs from 'dayjs';
 import { BlurView } from 'expo-blur';
 import { Link } from 'expo-router';
+import { Event } from '~/types/db';
 
 
 const helperImage = 'https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
@@ -16,18 +16,18 @@ const EventCard = ({ event }: EventCardProps) => {
   return (
     <Link href={`/event/${event.id}`} asChild>
     <Pressable style={styles.container}>
-      <Image source={{ uri: event.imageUrl }} style={styles.eventImage} />
-      <ImageBackground source={{ uri: !event?.isImageWhite ? event.imageUrl : helperImage }} blurRadius={40} 
+    <Image source={{ uri: event.image_url ?? '' }} style={styles.eventImage} />
+      <ImageBackground source={{ uri: !event?.is_image_white ? event.image_url ?? '' : helperImage }} blurRadius={40} 
       style={styles.infoContainer}>
         <View style={styles.dateContainer}>
-            <Text style={styles.month}>{dayjs(event.timestamp).format('MMM')}</Text>
-            <Text style={styles.day}>{dayjs(event.timestamp).format('DD')}</Text>
+            <Text style={styles.month}>{dayjs(event.time).format('MMM')}</Text>
+            <Text style={styles.day}>{dayjs(event.time).format('DD')}</Text>
         </View>
 
               <View style={{ flexShrink: 1, paddingLeft: 8 , borderBottomRightRadius: 16}}>
                   <Text numberOfLines={2} adjustsFontSizeToFit style={styles.title}>{event.title}</Text>
                   <Text adjustsFontSizeToFit style={styles.location}>{event.location}</Text>
-                  <Text style={styles.date}>{event.startDate} - {event.endDate} ⏰ {dayjs(event.timestamp).format('HH:MM')} </Text>
+                  <Text style={styles.date}>{event.start_date} - {event.end_date} ⏰ {dayjs(event.time).format('HH:MM')} </Text>
               </View>
           </ImageBackground>
     </Pressable>

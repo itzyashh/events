@@ -1,10 +1,33 @@
 import { Link, Redirect, Stack } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import EventCard from '~/components/EventCard';
-import events from '~/data/events';
+import { Event } from '~/types/db';
+import { supabase } from '~/utils/supabase';
 
 
 export default function Home() {
+
+  const [events, setEvents] = useState<Event[] | null>(null)
+
+  const getEvents = async () => {
+
+let { data: events, error } = await supabase
+.from('events')
+.select('*')
+.returns<Event[]>()
+        
+if (error) {
+console.error('error', error)
+}
+
+if (events) setEvents(events)
+  }
+
+  useEffect(() => {
+    getEvents()
+  }, [])
+
   return (
     <>
       <Stack.Screen options={{ title: 'Tab One' }} />
