@@ -1,4 +1,6 @@
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
 import { HeaderButton } from '~/components/HeaderButton';
 import { TabBarIcon } from '~/components/TabBarIcon';
 
@@ -20,17 +22,19 @@ export default function TabLayout() {
           backgroundColor: '#000',
         },
         headerTintColor: 'white',
+        headerShadowVisible: false
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <HeaderButton />
-            </Link>
-          ),
+          title: 'Events',
+          tabBarIcon: ({ color }) => <MaterialIcons name="event-note" size={28} color={color} />,
+          headerRight: () => 
+            <Link asChild href="/(protected)/event/create">
+            <TouchableOpacity>
+          <Ionicons style={{marginRight:15}} name="add-circle-outline" size={24} color="#ffffff" />
+          </TouchableOpacity>
+          </Link>
         }}
       />
       <Tabs.Screen

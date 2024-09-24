@@ -2,13 +2,14 @@ import { Link, Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import EventCard from '~/components/EventCard';
-import { Event } from '~/types/db';
+import { Attendee, Event } from '~/types/db';
 import { supabase } from '~/utils/supabase';
 
 
 export default function Home() {
 
   const [events, setEvents] = useState<Event[] | null>(null)
+  const [attendance, setAttendance] = useState<Attendee[] | null>(null)
 
   const getEvents = async () => {
 
@@ -16,6 +17,18 @@ let { data: events, error } = await supabase
 .from('events')
 .select('*')
 .returns<Event[]>()
+
+let { data: attendees, error: attendeeError } = await supabase
+.from('attendees')
+.select('*')
+.returns<Attendee[]>()
+
+
+if (attendeeError) {
+console.error('attendess error', attendeeError)
+}
+
+if (attendees) setAttendance(attendees)
         
 if (error) {
 console.error('error', error)
@@ -30,13 +43,13 @@ if (events) setEvents(events)
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
+      <Stack.Screen options={{ title: 'Events' }} />
       <View style={styles.container}>
 
     <FlatList
     showsVerticalScrollIndicator={false}
     renderItem={({ item }) => (
-        <EventCard event={item} />
+        <EventCard event={item} attendance={attendance?.filter((a) => a.event_id === item.id).length} />
     )
   }
     data={events}

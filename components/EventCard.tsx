@@ -4,18 +4,24 @@ import dayjs from 'dayjs';
 import { BlurView } from 'expo-blur';
 import { Link } from 'expo-router';
 import { Event } from '~/types/db';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 
 const helperImage = 'https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
 
 type EventCardProps = {
     event: Event;
+    attendance?: number;
 }
 
-const EventCard = ({ event }: EventCardProps) => {
+const EventCard = ({ event,attendance }: EventCardProps) => {
   return (
     <Link href={`/event/${event.id}`} asChild>
     <Pressable style={styles.container}>
+    <View style={styles.capsule}>
+    <FontAwesome5 name="users" size={14} color="#ffffff" />
+    <Text style={styles.attendance}>{attendance}</Text>
+    </View>
     <Image source={{ uri: event.image_url ?? '' }} style={styles.eventImage} />
       <ImageBackground source={{ uri: !event?.is_image_white ? event.image_url ?? '' : helperImage }} blurRadius={40} 
       style={styles.infoContainer}>
@@ -27,7 +33,8 @@ const EventCard = ({ event }: EventCardProps) => {
               <View style={{ flexShrink: 1, paddingLeft: 8 , borderBottomRightRadius: 16}}>
                   <Text numberOfLines={2} adjustsFontSizeToFit style={styles.title}>{event.title}</Text>
                   <Text adjustsFontSizeToFit style={styles.location}>{event.location}</Text>
-                  <Text style={styles.date}>{event.start_date} - {event.end_date} ⏰ {dayjs(event.time).format('HH:MM')} </Text>
+                  <Text style={styles.date}>{event.start_date} - {event.end_date}</Text>
+                  <Text style={[styles.date, {marginTop:4, fontWeight:'bold'}]}>⏰ {dayjs(event.time).format('HH:MM')}</Text>
               </View>
           </ImageBackground>
     </Pressable>
@@ -90,5 +97,22 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         fontWeight: '500',
     },
+    attendance: {
+        color: '#ffffff',
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    capsule: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        backgroundColor: '#0be93bd3',
+        padding: 6,
+        borderRadius: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        zIndex: 1,
+        gap: 4,
+    }
 
 })

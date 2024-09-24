@@ -11,6 +11,7 @@ import { useAuth } from '~/providers/AuthProvider';
 import { supabase } from '~/utils/supabase';
 import { decode } from 'base64-arraybuffer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Profile } from '~/types/db';
 
 export default function Home() {
   const [username, setUsername] = useState('');
@@ -47,6 +48,7 @@ export default function Home() {
       .from('profiles')
       .select('username, full_name, avatar_url')
       .eq('id', session?.user.id)
+      .returns<Profile>()
       .single()
 
     if (error) {
@@ -154,6 +156,11 @@ export default function Home() {
               saveLoading ? <ActivityIndicator color={'#fff'} /> : <Text style={styles.buttonText}>Save</Text>
             }
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => supabase.auth.signOut()}
+          style={[styles.button,{backgroundColor:'#ff0800c4'}]}>
+          <Text style={styles.buttonText}>Sign Out</Text>
+        </TouchableOpacity>
 
       </View>
     
@@ -180,9 +187,10 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   button: {
+    marginTop: 12,
     backgroundColor: 'blue',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 12,
     alignItems: 'center',
   },
   buttonText: {
