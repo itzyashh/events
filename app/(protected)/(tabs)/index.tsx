@@ -34,11 +34,31 @@ if (error) {
 console.error('error', error)
 }
 
-if (events) setEvents(events)
+console.log('events',events)
+
+// if (events) setEvents(events)
   }
+
+  const getNearbyEvents = async () => {
+    const { data: nearbyEvents, error } = await supabase.rpc('nearby_events', {
+      lat: 18.543013,
+      long: 73.828717
+    }).returns<Event[]>()
+
+    console.log('nearbyEvents',nearbyEvents)
+    console.log('err',error)
+    if (error) {
+      console.error('error', error)
+      return
+    }
+
+    if (nearbyEvents) setEvents(nearbyEvents)
+    
+  } 
 
   useEffect(() => {
     getEvents()
+    getNearbyEvents()
   }, [])
 
   return (

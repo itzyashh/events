@@ -69,7 +69,7 @@ const Page = () => {
       .select('*')
       .returns<Attendee>()
 
-      if (error) console.error('error', error)
+      if (error) console.log('attendeeserror', error)
 
       if (!error) {
         showToast('Registered successfully!', 'success')
@@ -91,7 +91,7 @@ const Page = () => {
         headerRight: () => <Fontisto name="bookmark-alt" size={24} color="#ffffff" />
          }} />
 
-    <Image source={{ uri: event?.image_url ?? undefined }} style={styles.image} />
+    <Image resizeMode='contain' source={{ uri: event?.image_url ?? undefined }} style={styles.image} />
     <View style={styles.eventInfo}>
       <Text style={styles.title}>{event?.title}</Text>
       <Text style={styles.location}>{event?.location}</Text>

@@ -47,42 +47,45 @@ export type Database = {
       }
       events: {
         Row: {
+          coordinates: unknown | null
           created_at: string
           creator_id: string | null
           description: string | null
           end_date: string | null
+          event_time: string
           id: number
           image_url: string | null
           is_image_white: boolean | null
           location: string | null
           start_date: string
-          time: string
           title: string
         }
         Insert: {
+          coordinates?: unknown | null
           created_at?: string
           creator_id?: string | null
           description?: string | null
           end_date?: string | null
+          event_time: string
           id?: number
           image_url?: string | null
           is_image_white?: boolean | null
           location?: string | null
           start_date: string
-          time: string
           title: string
         }
         Update: {
+          coordinates?: unknown | null
           created_at?: string
           creator_id?: string | null
           description?: string | null
           end_date?: string | null
+          event_time?: string
           id?: number
           image_url?: string | null
           is_image_white?: boolean | null
           location?: string | null
           start_date?: string
-          time?: string
           title?: string
         }
         Relationships: [
@@ -135,7 +138,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      nearby_events: {
+        Args: {
+          lat: number
+          long: number
+        }
+        Returns: {
+          id: number
+          title: string
+          image_url: string
+          location: string
+          is_image_white: boolean
+          creator_id: string
+          created_at: string
+          start_date: string
+          description: string
+          end_date: string
+          lat: number
+          long: number
+          dist_meters: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
