@@ -1,14 +1,17 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image, Button } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image, Button, ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { router, Stack } from 'expo-router'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { Fontisto, MaterialCommunityIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import dayjs from 'dayjs';
 import { supabase } from '~/utils/supabase';
 import { NewEvent,Event } from '~/types/db';
 import { useAuth } from '~/providers/AuthProvider';
+import Mapbox, { Camera, LocationPuck, MapView, MarkerView} from '@rnmapbox/maps';
+import * as Location from 'expo-location';
 
+Mapbox.setAccessToken('pk.eyJ1IjoiaXR6eWFzaGgiLCJhIjoiY2t3bjVtb2ptMjJwNDJ4bWR2ZWV6eGpxNCJ9.wLqvp1MJxRyLfvw8W_S5QQ')
 const Page = () => {
 
     const { user } = useAuth()
@@ -27,6 +30,21 @@ const Page = () => {
     const [showTime, setShowTime] = useState(false)
     const [time, setTime] = useState<any>(null);
 
+    const [markerCoordinates, setMarkerCoordinates] = useState<[number, number]>([0, 0])
+
+    useEffect(() => {
+        (async () => {
+          
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            alert('Permission to access location was denied');
+            return;
+          }
+    
+          let location = await Location.getCurrentPositionAsync({});
+
+        })();
+      }, []);
 
     const pickImages = async () => {
         // No permissions request is necessary for launching the image library
@@ -134,122 +152,137 @@ const Page = () => {
 
 
     return (
-        <View style={styles.container}>
-            <Stack.Screen options={{
-                title: 'Create',
-                headerShown: true,
-                headerBackVisible: false,
-                headerShadowVisible: false,
-                headerTintColor: '#ffffff',
-                headerStyle: {
-                    backgroundColor: '#000',
-                },
+      <ScrollView style={styles.container}>
+        <Stack.Screen
+          options={{
+            title: 'Create',
+            headerShown: true,
+            headerBackVisible: false,
+            headerShadowVisible: false,
+            headerTintColor: '#ffffff',
+            headerStyle: {
+              backgroundColor: '#000',
+            },
+          }}
+        />
+        <TextInput
+          style={styles.titleInput}
+          placeholder="Title"
+          placeholderTextColor="#ffffff"
+          onChangeText={setTitle}
+          value={title}
+        />
+        <View style={styles.separator} />
 
-            }}
-             />
-            <TextInput
-                style={styles.titleInput}
-                placeholder="Title"
-                placeholderTextColor="#ffffff"
-                onChangeText={setTitle}
-                value={title}
-            />
-            <View style={styles.separator} />
+        <TextInput
+          style={styles.dInput}
+          multiline
+          placeholder="Description"
+          placeholderTextColor="#ffffff"
+          onChangeText={setDescription}
+          value={description}
+        />
+        <View style={styles.separator} />
 
-            <TextInput
-                style={styles.dInput}
-                multiline
-                placeholder="Description"
-                placeholderTextColor="#ffffff"
-                onChangeText={setDescription}
-                value={description}
-            />
-            <View style={styles.separator} />
-
-            <FlatList
-                data={images}
-                keyExtractor={item => item.uri}
-                horizontal
-                contentContainerStyle={{ gap: 5, alignItems: 'center' }}
-                style={{ flexGrow: 0, marginVertical: 10 }}
-                renderItem={({ item }) => (
-                    <Image source={{ uri: item.uri }} style={styles.image} />
-                )}
-                ListFooterComponent={<TouchableOpacity onPress={pickImages} style={styles.addButton}>
-                    <MaterialCommunityIcons name="file-image-plus" size={46} color="#ffffff" />
-                </TouchableOpacity>}
-            />
-
-            <View style={styles.separator} />
-            {/* yyyy - mm - dd */}
-            <View style={styles.dateContainer}>
-                <TouchableOpacity
-                    onPress={() => {
-                        setShow(true);
-                        setMode('date');
-                        setType('start');
-                    }}
-
-                    style={styles.date}
-
-                >
-                    <Text style={styles.dateText}>{dayjs(startDate).format('DD-MM-YYYY') == 'Invalid Date' ? 'Start Date' : dayjs(startDate).format('DD-MM-YYYY')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => {
-                        setShow(true);
-                        setMode('date');
-                        setType('end');
-                    }}
-                    style={styles.date}
-                >
-                    <Text style={styles.dateText}>{dayjs(endDate).format('DD-MM-YYYY') == 'Invalid Date' ? 'End Date' : dayjs(endDate).format('DD-MM-YYYY')}</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.separator} />
-            <View style={styles.dateContainer}>
-                <TouchableOpacity
-                    onPress={() => {
-                        setShowTime(true)
-                    }}
-                    style={styles.date}
-                >
-                    <Text style={styles.dateText}>{dayjs(time).format('HH:mm') == 'Invalid Date' ? 'Time' : dayjs(time).format('HH:mm')}</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.separator} />
-
-            <TouchableOpacity onPress={onSubmit} style={styles.submitButton}>
-                <Text style={styles.submitText}>Submit</Text>
+        <FlatList
+          data={images}
+          keyExtractor={(item) => item.uri}
+          horizontal
+          contentContainerStyle={{ gap: 5, alignItems: 'center' }}
+          style={{ flexGrow: 0, marginVertical: 10 }}
+          renderItem={({ item }) => <Image source={{ uri: item.uri }} style={styles.image} />}
+          ListFooterComponent={
+            <TouchableOpacity onPress={pickImages} style={styles.addButton}>
+              <MaterialCommunityIcons name="file-image-plus" size={46} color="#ffffff" />
             </TouchableOpacity>
+          }
+        />
 
-
-
-            <DateTimePickerModal
-                isVisible={show}
-                testID="dateTimePicker"
-                date={date}
-                mode={mode}
-                display='spinner'
-                is24Hour={true}
-                onConfirm={onChange}
-                onCancel={() => setShow(false)}
-
-            />
-
-            <DateTimePickerModal
-                isVisible={showTime}
-                mode='time'
-                display='spinner'
-                is24Hour
-                onConfirm={onTimeChange}
-                minuteInterval={10}
-                onCancel={() => setShowTime(false)}
-                />
-
+        <View style={styles.separator} />
+        {/* yyyy - mm - dd */}
+        <View style={styles.dateContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              setShow(true);
+              setMode('date');
+              setType('start');
+            }}
+            style={styles.date}>
+            <Text style={styles.dateText}>
+              {dayjs(startDate).format('DD-MM-YYYY') == 'Invalid Date'
+                ? 'Start Date'
+                : dayjs(startDate).format('DD-MM-YYYY')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setShow(true);
+              setMode('date');
+              setType('end');
+            }}
+            style={styles.date}>
+            <Text style={styles.dateText}>
+              {dayjs(endDate).format('DD-MM-YYYY') == 'Invalid Date'
+                ? 'End Date'
+                : dayjs(endDate).format('DD-MM-YYYY')}
+            </Text>
+          </TouchableOpacity>
         </View>
-    )
+        <View style={styles.separator} />
+        <View style={styles.dateContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              setShowTime(true);
+            }}
+            style={styles.date}>
+            <Text style={styles.dateText}>
+              {dayjs(time).format('HH:mm') == 'Invalid Date' ? 'Time' : dayjs(time).format('HH:mm')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.separator} />
+
+        <TouchableOpacity onPress={onSubmit} style={styles.submitButton}>
+          <Text style={styles.submitText}>Submit</Text>
+        </TouchableOpacity>
+
+        <DateTimePickerModal
+          isVisible={show}
+          testID="dateTimePicker"
+          date={date}
+          mode={mode}
+          display="spinner"
+          is24Hour={true}
+          onConfirm={onChange}
+          onCancel={() => setShow(false)}
+        />
+
+        <DateTimePickerModal
+          isVisible={showTime}
+          mode="time"
+          display="spinner"
+          is24Hour
+          onConfirm={onTimeChange}
+          minuteInterval={10}
+          onCancel={() => setShowTime(false)}
+        />
+
+        <MapView
+          onPress={(e) => {
+            setMarkerCoordinates([e.geometry.coordinates[0], e.geometry.coordinates[1]])
+            console.log('e', e)
+          }}
+          style={{ marginBottom: 150, height: 600 }}
+          styleURL={Mapbox.StyleURL.TrafficNight} >
+          <Camera followZoomLevel={15} followUserLocation />
+          <LocationPuck pulsing={{ isEnabled: true }} />
+          <MarkerView coordinate={markerCoordinates} >
+          <Fontisto name="map-marker-alt" size={34} color="#56df44" />
+          </MarkerView>
+        </MapView>
+      </ScrollView>
+    );
 }
 
 export default Page
