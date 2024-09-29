@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image, Button, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image, Button, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack } from 'expo-router'
 import { Fontisto, MaterialCommunityIcons } from '@expo/vector-icons'
@@ -8,8 +8,11 @@ import dayjs from 'dayjs';
 import { supabase } from '~/utils/supabase';
 import { NewEvent,Event } from '~/types/db';
 import { useAuth } from '~/providers/AuthProvider';
-import Mapbox, { Camera, LocationPuck, MapView, MarkerView} from '@rnmapbox/maps';
 import * as Location from 'expo-location';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { suggestions } from '~/data/sugesstions';
+import Mapbox from '@rnmapbox/maps';
+import LocationPicker from '~/components/LocationPicker';
 
 Mapbox.setAccessToken('pk.eyJ1IjoiaXR6eWFzaGgiLCJhIjoiY2t3bjVtb2ptMjJwNDJ4bWR2ZWV6eGpxNCJ9.wLqvp1MJxRyLfvw8W_S5QQ')
 const Page = () => {
@@ -152,7 +155,7 @@ const Page = () => {
 
 
     return (
-      <ScrollView style={styles.container}>
+      <KeyboardAwareScrollView bottomOffset={200} style={styles.container}>
         <Stack.Screen
           options={{
             title: 'Create',
@@ -243,6 +246,8 @@ const Page = () => {
 
         <View style={styles.separator} />
 
+        <LocationPicker />
+
         <TouchableOpacity onPress={onSubmit} style={styles.submitButton}>
           <Text style={styles.submitText}>Submit</Text>
         </TouchableOpacity>
@@ -268,20 +273,7 @@ const Page = () => {
           onCancel={() => setShowTime(false)}
         />
 
-        <MapView
-          onPress={(e) => {
-            setMarkerCoordinates([e.geometry.coordinates[0], e.geometry.coordinates[1]])
-            console.log('e', e)
-          }}
-          style={{ marginBottom: 150, height: 600 }}
-          styleURL={Mapbox.StyleURL.TrafficNight} >
-          <Camera followZoomLevel={15} followUserLocation />
-          <LocationPuck pulsing={{ isEnabled: true }} />
-          <MarkerView coordinate={markerCoordinates} >
-          <Fontisto name="map-marker-alt" size={34} color="#56df44" />
-          </MarkerView>
-        </MapView>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
 }
 
@@ -360,6 +352,20 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 16,
     },
+    mapSearchBox: {
+        width: '100%',
+        backgroundColor: '#a8a4a49d',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 22,
+        color: '#000',
 
+    },
+    mapContainer: {
+        position: 'relative',
+        width: '100%',
+        height: 400,
+        borderRadius: 22,
+        marginBottom: 150,    },
 
 })

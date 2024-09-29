@@ -12,6 +12,7 @@ import { supabase } from '~/utils/supabase';
 import * as SystemUI from 'expo-system-ui';
 import Toastable from 'react-native-toastable';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
@@ -49,6 +50,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <KeyboardProvider>
     <Stack>
       <Stack.Screen name="(protected)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -63,6 +65,7 @@ export default function RootLayout() {
                 }}
                 offset={top}
             />
+      </KeyboardProvider>
     </AuthProvider>
   );
 }
