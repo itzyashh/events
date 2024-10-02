@@ -20,7 +20,15 @@ const EventCard = ({ event,attendance }: EventCardProps) => {
     const distanceInKm = Math.round(distance / 1000)
 
   return (
-    <Link href={`/event/${event.id}`} asChild>
+    // <Link href={`/event/${event.id}?lat=${event.lat}&long=${event.long}`} asChild>
+    <Link href={{
+        pathname: `/(protected)/event/[id]`,
+        params: {
+            id: event.id,
+            lat: event.lat,
+            long: event.long
+        }
+    }} asChild>
     <Pressable style={styles.container}>
     <View style={styles.capsule}>
     <FontAwesome5 name="users" size={14} color="#ffffff" />

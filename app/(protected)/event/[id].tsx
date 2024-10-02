@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { Fontisto } from '@expo/vector-icons'
@@ -7,12 +7,15 @@ import { Attendee, Event } from '~/types/db'
 import { showToastable } from 'react-native-toastable'
 import { showToast } from '~/utils/Toast'
 import { useAuth } from '~/providers/AuthProvider'
+import Mapbox, { Camera, MapView, MarkerView } from '@rnmapbox/maps'
 
 
 const Page = () => {
 
-  const { id } = useLocalSearchParams()
+  const { id, lat ,long } = useLocalSearchParams()
   const { user } = useAuth()
+  const longitude = parseFloat(long)
+  const latitude = parseFloat(lat)
 
   const [event, setEvent] = React.useState<Event | null>(null)
   const [attendee, setAttendee] = React.useState<Attendee | null>(null)
@@ -58,6 +61,33 @@ const Page = () => {
     getEvent()
   }, [])
 
+  const openeMaps = () => {
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+    const appleMapsUrl = `http://maps.apple.com/?daddr=${latitude},${longitude}`;
+
+    // Check if Google Maps can be opened
+    Linking.canOpenURL(googleMapsUrl)
+      .then((supported) => {
+        if (supported) {
+          Linking.openURL(googleMapsUrl);
+        } else if (Platform.OS === 'ios') {
+          // If Google Maps is not supported and it's an iOS device, fallback to Apple Maps
+          Linking.openURL(appleMapsUrl)
+            .then((supported) => {
+              if (!supported) {
+                Alert.alert('Neither Google Maps nor Apple Maps are available.');
+              }
+            })
+            .catch((err) => console.error('An error occurred', err));
+        } else {
+          // If on Android and Google Maps is not available
+          Alert.alert('Google Maps not supported on this device.');
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+  };
+
+
   const onJoin = async () => {
 
     const { data, error } = await supabase
@@ -81,37 +111,58 @@ const Page = () => {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ 
-        title: 'Event',
-        headerBackTitleVisible: false,
-        headerTintColor: '#fff',
-        headerStyle: {
-          backgroundColor: '#000',
-        },
-        headerRight: () => <Fontisto name="bookmark-alt" size={24} color="#ffffff" />
-         }} />
+      <Stack.Screen
+        options={{
+          title: 'Event',
+          headerBackTitleVisible: false,
+          headerTintColor: '#fff',
+          headerStyle: {
+            backgroundColor: '#000',
+          },
+          headerRight: () => <Fontisto name="bookmark-alt" size={24} color="#ffffff" />,
+        }}
+      />
 
-    <Image resizeMode='contain' source={{ uri: event?.image_url ?? undefined }} style={styles.image} />
-    <View style={styles.eventInfo}>
-      <Text style={styles.title}>{event?.title}</Text>
-      <Text style={styles.location}>{event?.location}</Text>
-      <Text style={styles.date}>{event?.start_date} - {event?.end_date}</Text>
-      <Text style={styles.description}>{event?.description}</Text>
+      <Image
+        resizeMode="contain"
+        source={{ uri: event?.image_url ?? undefined }}
+        style={styles.image}
+      />
+      <View style={styles.eventInfo}>
+        <Text style={styles.title}>{event?.title}</Text>
+        <Text style={styles.location}>{event?.location}</Text>
+        <Text style={styles.date}>
+          {event?.start_date} - {event?.end_date}
+        </Text>
+        <Text style={styles.description}>{event?.description}</Text>
 
+        <MapView style={{ height: 300, marginTop: 16 }} styleURL={Mapbox.StyleURL.Dark}>
+          <Pressable style={styles.directionButton} onPress={openeMaps}>
+            <Text style={styles.directionText}>Get Directions</Text>
+          </Pressable>
+          <Camera zoomLevel={15} centerCoordinate={[longitude, latitude]} />
+          <MarkerView coordinate={[longitude, latitude]} allowOverlapWithPuck>
+            <Fontisto name="map-marker-alt" size={34} color="#9aace0" />
+          </MarkerView>
+        </MapView>
+      </View>
 
+      {loading ? (
+        <ActivityIndicator size={'large'} />
+      ) : (
+        <View style={[styles.footer, { justifyContent: attendee ? 'center' : 'space-between' }]}>
+          {!attendee && <Text style={styles.footerText}>Free</Text>}
+          {attendee ? (
+            <Text style={styles.attendeeText}>You are registered</Text>
+          ) : (
+            <Pressable onPress={onJoin} style={styles.footerButton}>
+              <Text style={styles.footerButtonText}>Register</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
     </View>
-
-{ loading ? <ActivityIndicator size={'large'} /> :   <View style={[styles.footer, { justifyContent: attendee ? 'center' : 'space-between' }]}>
- { !attendee && <Text style={styles.footerText}>Free</Text>}
- {    attendee ? <Text style={styles.attendeeText}>You are registered</Text>
- 
- :<Pressable onPress={onJoin} style={styles.footerButton}>
-        <Text style={styles.footerButtonText}>Register</Text>
-      </Pressable>}
-    </View>}
-    </View>
-
-  )
+  );
 }
 
 
@@ -180,6 +231,18 @@ const styles = StyleSheet.create({
   attendeeText: {
     color: '#68f568',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  directionButton: {
+    position: 'absolute',
+    top: 16,
+    right: 6,
+    backgroundColor: '#a4ea79',
+    padding: 8,
+    borderRadius: 8,
+  },
+  directionText: {
+    color: '#000',
     fontWeight: 'bold',
   },
 
