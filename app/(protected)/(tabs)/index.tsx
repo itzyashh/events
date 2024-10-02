@@ -2,13 +2,13 @@ import { Link, Redirect, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import EventCard from '~/components/EventCard';
-import { Attendee, Event } from '~/types/db';
+import { Attendee, Event, NearByEvent } from '~/types/db';
 import { supabase } from '~/utils/supabase';
 
 
 export default function Home() {
 
-  const [events, setEvents] = useState<Event[] | null>(null)
+  const [events, setEvents] = useState<NearByEvent[] | null>(null)
   const [attendance, setAttendance] = useState<Attendee[] | null>(null)
 
   const getEvents = async () => {
@@ -43,7 +43,7 @@ console.log('events',events)
     const { data: nearbyEvents, error } = await supabase.rpc('nearby_events', {
       lat: 18.543013,
       long: 73.828717
-    }).returns<Event[]>()
+    }).returns<NearByEvent[]>()
 
     console.log('nearbyEvents',nearbyEvents)
     console.log('err',error)

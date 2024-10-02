@@ -3,18 +3,22 @@ import React from 'react'
 import dayjs from 'dayjs';
 import { BlurView } from 'expo-blur';
 import { Link } from 'expo-router';
-import { Event } from '~/types/db';
+import { Event, NearByEvent } from '~/types/db';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 
 const helperImage = 'https://images.pexels.com/photos/976866/pexels-photo-976866.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
 
 type EventCardProps = {
-    event: Event;
+    event: NearByEvent
     attendance?: number;
 }
 
 const EventCard = ({ event,attendance }: EventCardProps) => {
+
+    const distance = event.dist_meters
+    const distanceInKm = Math.round(distance / 1000)
+
   return (
     <Link href={`/event/${event.id}`} asChild>
     <Pressable style={styles.container}>
@@ -22,19 +26,22 @@ const EventCard = ({ event,attendance }: EventCardProps) => {
     <FontAwesome5 name="users" size={14} color="#ffffff" />
     <Text style={styles.attendance}>{attendance}</Text>
     </View>
+    <View style={[styles.capsule, {top: 42,backgroundColor: '#255a71d3',paddingVertical: 4}]}>
+    <Text style={styles.attendance}>{distanceInKm + ' km'}</Text>
+    </View>
     <Image source={{ uri: event.image_url ?? '' }} style={styles.eventImage} />
       <ImageBackground source={{ uri: !event?.is_image_white ? event.image_url ?? '' : helperImage }} blurRadius={40} 
       style={styles.infoContainer}>
         <View style={styles.dateContainer}>
-            <Text style={styles.month}>{dayjs(event.time).format('MMM')}</Text>
-            <Text style={styles.day}>{dayjs(event.time).format('DD')}</Text>
+            <Text style={styles.month}>{dayjs(event.event_time).format('MMM')}</Text>
+            <Text style={styles.day}>{dayjs(event.event_time).format('DD')}</Text>
         </View>
 
               <View style={{ flexShrink: 1, paddingLeft: 8 , borderBottomRightRadius: 16}}>
                   <Text numberOfLines={2} adjustsFontSizeToFit style={styles.title}>{event.title}</Text>
                   <Text adjustsFontSizeToFit style={styles.location}>{event.location}</Text>
                   <Text style={styles.date}>{event.start_date} - {event.end_date}</Text>
-                  <Text style={[styles.date, {marginTop:4, fontWeight:'bold'}]}>⏰ {dayjs(event.time).format('HH:MM')}</Text>
+                  <Text style={[styles.date, {marginTop:4, fontWeight:'bold'}]}>⏰ {dayjs(event.event_time).format('HH:MM')}</Text>
               </View>
           </ImageBackground>
     </Pressable>
@@ -55,6 +62,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderBottomLeftRadius: 16,
         borderBottomRightRadius: 16,
+        borderTopWidth: StyleSheet.hairlineWidth
     },
     dateContainer: {
         width: 80,

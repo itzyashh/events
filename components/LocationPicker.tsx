@@ -8,7 +8,7 @@ import { useAuth } from '~/providers/AuthProvider';
 import * as Location from 'expo-location';
 
 
-const LocationPicker = () => {
+const LocationPicker = ({ selectedLocation }: { selectedLocation: any }) => {
     const [markerCoordinates, setMarkerCoordinates] = React.useState([0,0]);
     const [cameraCoordinates, setCameraCoordinates] = React.useState(null);
     const [searchArea, setSearchArea] = React.useState('');
@@ -16,6 +16,7 @@ const LocationPicker = () => {
     const [suggestions, setSuggestions] = React.useState([]);
     const { session } = useAuth();
     const [text, setText] = React.useState('');
+    const [city, setCity] = React.useState('');
 
     const onItemPress = async (item: any) => {
         setText(item.name);
@@ -26,6 +27,7 @@ const LocationPicker = () => {
         const place = await retrievePlace(item.mapbox_id, session?.access_token);
         console.log('place', place)
         setCameraCoordinates(place.features[0].geometry.coordinates);
+        setCity(place.features[0].context.place.name);
         setSearchArea(`${place.features[0].geometry.coordinates[0]},${place.features[0].geometry.coordinates[1]}`);
         setIsActive(false);
     }
@@ -42,6 +44,12 @@ const LocationPicker = () => {
           setSearchArea(`${location.coords.longitude},${location.coords.latitude}`);
         })();
       }, []);
+
+    const onMapPress = (event: any) => {
+        setMarkerCoordinates([event.geometry.coordinates[0], event.geometry.coordinates[1]]);
+        setCameraCoordinates([event.geometry.coordinates[0], event.geometry.coordinates[1]]);
+        selectedLocation([event.geometry.coordinates[1], event.geometry.coordinates[0]]);
+    }
 
     const onSearch = async (text: string) => {
  
@@ -64,6 +72,7 @@ const LocationPicker = () => {
                     placeholder="Search" 
                     onFocus={() => setIsActive(true)}
                     onBlur={() => {
+                        console.log('onBlur');
                         setTimeout(() => {
                             setIsActive(false);
                         }, 1200);
@@ -83,12 +92,10 @@ const LocationPicker = () => {
                 />}
             </View>
             <MapView
-                onPress={(e) => {
-                    setMarkerCoordinates([e.geometry.coordinates[0], e.geometry.coordinates[1]]);
-                    console.log('e', e);
-                }}
+                onPress={onMapPress}
                 style={styles.mapView}
                 styleURL={Mapbox.StyleURL.Dark}
+                
             >
                 <Camera followZoomLevel={15} 
                 followUserLocation={!cameraCoordinates}

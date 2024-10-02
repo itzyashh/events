@@ -154,6 +154,7 @@ export type Database = {
           start_date: string
           description: string
           end_date: string
+          event_time: string
           lat: number
           long: number
           dist_meters: number
