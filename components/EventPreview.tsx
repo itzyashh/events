@@ -30,7 +30,7 @@ const EventPreview: React.FC<EventPreviewProps> = ({ event, sheetIndex }) => {
   return (
     <View>
 
-   { sheetIndex === 1 && <Animated.Image
+   { sheetIndex >= 1 && <Animated.Image
          entering={FadeInUp.duration(500)}
          exiting={FadeInDown.duration(500)}
          
@@ -39,13 +39,15 @@ const EventPreview: React.FC<EventPreviewProps> = ({ event, sheetIndex }) => {
         <ImageBackground
             blurRadius={10}
             tintColor={'rgba(0,0,0,0.5)'}
-            imageStyle={{ display: sheetIndex === 1 ? 'none' : 'flex' }}
+            imageStyle={{ display: sheetIndex >= 1 ? 'none' : 'flex' }}
          source={{ uri: event.image_url }} 
         style={{ padding: 16,
          }}>
 
       <Text style={styles.eventName}>{event.title}</Text>
-      <Text style={styles.description}>{event.description}</Text>
+      <Text 
+      numberOfLines={sheetIndex >= 1 ? 3 : 2}
+      style={styles.description}>{event.description}</Text>
 
       <Pressable style={styles.button} onPress={goToEvent}>
         <Feather name="corner-down-right" size={24} color="#e9e9e9" />

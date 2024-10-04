@@ -39,7 +39,7 @@ const Page = () => {
       .single()
 
     if (attendeeError) {
-      console.error('error', attendeeError)
+      console.log('error', attendeeError)
     }
     if (error) {
       console.error('error', error)
@@ -84,7 +84,7 @@ const Page = () => {
           Alert.alert('Google Maps not supported on this device.');
         }
       })
-      .catch((err) => console.error('An error occurred', err));
+      .catch((err) => console.log('An error occurred', err));
   };
 
 

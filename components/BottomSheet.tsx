@@ -18,7 +18,7 @@ const GBottomSheet = ({ visible, setVisible, children, setSheetIndex }: GBottomS
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], []);
+  const snapPoints = useMemo(() => ['25%', '60%'], []);
 
   const handleSheetChanges = useCallback((index: number) => {
     if (setSheetIndex) {
@@ -45,6 +45,7 @@ const GBottomSheet = ({ visible, setVisible, children, setSheetIndex }: GBottomS
           snapPoints={snapPoints}
           handleComponent={() => null}
           onChange={handleSheetChanges}
+          overDragResistanceFactor={0}
         >
           <BottomSheetView style={styles.contentContainer}>
             {children}

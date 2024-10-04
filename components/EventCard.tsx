@@ -41,8 +41,8 @@ const EventCard = ({ event,attendance }: EventCardProps) => {
       <ImageBackground source={{ uri: !event?.is_image_white ? event.image_url ?? '' : helperImage }} blurRadius={40} 
       style={styles.infoContainer}>
         <View style={styles.dateContainer}>
-            <Text style={styles.month}>{dayjs(event.event_time).format('MMM')}</Text>
-            <Text style={styles.day}>{dayjs(event.event_time).format('DD')}</Text>
+            <Text style={styles.month}>{dayjs(event.start_date).format('MMM')}</Text>
+            <Text style={styles.day}>{dayjs(event.start_date).format('DD')}</Text>
         </View>
 
               <View style={{ flexShrink: 1, paddingLeft: 8 , borderBottomRightRadius: 16}}>

@@ -5,8 +5,8 @@ import { useAuth } from '~/providers/AuthProvider';
 import { supabase } from '~/utils/supabase';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('yashjadhav1502@gmail.com');
-  const [password, setPassword] = useState('supabase');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {

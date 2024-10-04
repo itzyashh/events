@@ -5,7 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { router, Stack } from 'expo-router';
@@ -41,6 +42,8 @@ const Page = () => {
   const [showTime, setShowTime] = useState(false);
   const [time, setTime] = useState<any>(null);
   const [city, setCity] = useState('');
+
+  const [loading, setLoading] = useState(false);
 
   const [markerCoordinates, setMarkerCoordinates] = useState<[number, number]>([0, 0]);
 
@@ -120,7 +123,7 @@ const Page = () => {
       coordinates: `POINT(${markerCoordinates[1]} ${markerCoordinates[0]})`,
       location: city || 'Remote',
     };
-
+    setLoading(true);
     const { data, error } = await supabase
       .from('events')
       .insert([newEvent])
@@ -149,6 +152,7 @@ const Page = () => {
     }
 
     // router.push(`/(protected)/event/${data.id}`);
+    setLoading(false);
     router.replace({
       pathname: `/(protected)/event/[id]`,
       params: {
@@ -261,8 +265,10 @@ const Page = () => {
 
       <LocationPicker selectedLocation={setMarkerCoordinates} />
 
-      <TouchableOpacity onPress={onSubmit} style={styles.submitButton}>
-        <Text style={styles.submitText}>Submit</Text>
+      <TouchableOpacity
+      disabled={loading}
+       onPress={onSubmit} style={styles.submitButton}>
+  { !loading ?     <Text style={styles.submitText}>Submit</Text> : <ActivityIndicator size={'small'} /> }
       </TouchableOpacity>
 
       <DateTimePickerModal
