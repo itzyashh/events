@@ -105,7 +105,7 @@ const Page = () => {
   };
 
   const onSubmit = async () => {
-    if (!title || !description || !startDate || !endDate || !time || !city || images.length === 0) {
+    if (!title || !description || !startDate || !endDate || !time || images.length === 0) {
       return;
     }
     console.log('markerCoordinates', markerCoordinates);
@@ -118,7 +118,7 @@ const Page = () => {
       event_time: time.toUTCString(),
       creator_id: user?.id,
       coordinates: `POINT(${markerCoordinates[1]} ${markerCoordinates[0]})`,
-      location: city ? city : 'Remote',
+      location: city || 'Remote',
     };
 
     const { data, error } = await supabase
@@ -148,7 +148,15 @@ const Page = () => {
       return;
     }
 
-    router.push(`/(protected)/event/${data.id}`);
+    // router.push(`/(protected)/event/${data.id}`);
+    router.replace({
+      pathname: `/(protected)/event/[id]`,
+      params: {
+        id: data.id,
+        lat: markerCoordinates[0],
+        long: markerCoordinates[1],
+      },
+    });
   };
 
   return (

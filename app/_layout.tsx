@@ -11,8 +11,9 @@ import { supabase } from '~/utils/supabase';
 
 import * as SystemUI from 'expo-system-ui';
 import Toastable from 'react-native-toastable';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
@@ -49,6 +50,7 @@ export default function RootLayout() {
   })
 
   return (
+    <GestureHandlerRootView style={{flex:1}}>
     <AuthProvider>
       <KeyboardProvider>
     <Stack>
@@ -67,5 +69,6 @@ export default function RootLayout() {
             />
       </KeyboardProvider>
     </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
