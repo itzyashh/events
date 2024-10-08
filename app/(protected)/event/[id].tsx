@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { Fontisto } from '@expo/vector-icons'
@@ -110,7 +110,7 @@ const Page = () => {
 
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Stack.Screen
         options={{
           title: 'Event',
@@ -161,7 +161,7 @@ const Page = () => {
           )}
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
