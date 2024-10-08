@@ -58,10 +58,8 @@ The app uses **Mapbox** to show event locations in an interactive and visually a
 
 ## Installation
 
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/your-repo/events-app.git
-   ```
+1. Clone the repo
+
 2. Install dependencies:
    ```bash
    npm install
