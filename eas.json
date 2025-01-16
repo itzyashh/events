@@ -1,0 +1,37 @@
+{
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {
+      "android": {
+        "buildType": "apk",
+        "releaseChannel": "default",
+        "autoIncrement": true,
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL":"https://qkqrqczzpwsjbdsrmxlm.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrcXJxY3p6cHdzamJkc3JteGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY2NzkzNDcsImV4cCI6MjA0MjI1NTM0N30.i47p5Fdviy3mvCqGVp1b6hCi8tN0khNiXfgs4-3szWo",
+        "EXPO_MAPBOX_SK":"sk.eyJ1IjoiaXR6eWFzaGgiLCJhIjoiY20xa3o0Z2s4MDJ1azJrczA3ZzJzM2VvayJ9.uX1i_udRjG5l_j9tyi9MjQ"
+      }
+      
+    }
+  },
+  "cli": {
+    "appVersionSource": "remote"
+  }
+}

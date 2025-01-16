@@ -9,6 +9,11 @@ export default {
       "output": "static",
       "favicon": "./assets/favicon.png"
     },
+    "extra": {
+      "eas": {
+        "projectId": "1d6a659b-6a2e-49ac-9afd-97d750c66eb9"
+      }
+    },
     "plugins": [
       "expo-router",
       "expo-font",
